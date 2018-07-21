@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.4//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oa.dao.ExpenseReportDao">
+
+    <resultMap id="expenseReport" type="ExpenseReport">
+        <id property="id" column="id" javaType="Integer"/>
+        <result property="cause" column="cause" javaType="String"/>
+        <result property="createNum" column="create_num" javaType="String"/>
+        <result property="createTime" column="create_time" javaType="java.util.Date"/>
+        <result property="nextDealNum" column="next_deal_num" javaType="String"/>
+        <result property="totalAmount" column="total_amount" javaType="Double"/>
+        <result property="status" column="status" javaType="String"/>
+        <association property="creater" column="create_num" javaType="Employee">
+            <result property="name" column="cname" javaType="String"/>
+            <result property="post" column="cpost" javaType="String"/>
+        </association>
+        <association property="dealer" column="next_deal_num" javaType="Employee">
+            <result property="name" column="dname" javaType="String"/>
+            <result property="post" column="dpost" javaType="String"/>
+        </association>
+    </resultMap>
+
+    <!--获取数据库自增的id值-->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="ExpenseReport">
+        insert into expense_report(cause,create_num,create_time,next_deal_num,total_amount,status)
+        values(#{cause},#{createNum},#{createTime},#{nextDealNum},#{totalAmount},#{status})
+    </insert>
+
+    <update id="update" parameterType="ExpenseReport">
+        update expense_report set cause=#{cause},next_deal_num=#{nextDealNum},total_amount=#{totalAmount},status=#{status} where id=#{id}
+    </update>
+
+    <delete id="delete" parameterType="Integer">
+        delete from expense_report where id=#{id}
+    </delete>
+
+    <select id="select" parameterType="Integer" resultMap="expenseReport">
+        select er.*,ce.name cname ,ce.post cpost,de.name dname,de.post dpost from expense_report er
+        left join employee ce on ce.num=er.create_num
+        left join employee de on de.num=er.next_deal_num
+        where er.id=#{id}
+    </select>
+
+    <select id="selectByCreateNum" parameterType="String" resultMap="expenseReport">
+        select er.*,ce.name cname ,ce.post cpost,de.name dname,de.post dpost from expense_report er
+        left join employee ce on ce.num=er.create_num
+        left join employee de on de.num=er.next_deal_num
+        where er.create_num=#{cnum} order by er.create_time desc
+    </select>
+
+    <select id="selectByNextDealNum" resultMap="expenseReport">
+        select er.*,ce.name cname ,ce.post cpost,de.name dname,de.post dpost from expense_report er
+        left join employee ce on ce.num=er.create_num
+        left join employee de on de.num=er.next_deal_num
+        where er.next_deal_num=#{dnum} order by er.create_time desc
+    </select>
+
+</mapper>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.4//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oa.dao.EmployeeDao">
+
+    <resultMap id="employee" type="Employee">
+        <id property="num" column="num" javaType="String"/>
+        <result property="password" column="password" javaType="String"/>
+        <result property="name" column="name" javaType="String"/>
+        <result property="departmentNum" column="department_num" javaType="String"/>
+        <result property="post" column="post" javaType="String"/>
+        <association property="department" column="department_num" javaType="Department">
+            <id property="num" column="dnum" javaType="String"/>
+            <result property="name" column="dname" javaType="String"/>
+        </association>
+    </resultMap>
+
+
+    <insert id="insert" parameterType="Employee">
+        insert into employee values(#{num},#{password},#{name},#{departmentNum},#{post})
+    </insert>
+
+    <update id="update" parameterType="Employee">
+        update employee set password=#{password},name=#{name},department_num=#{departmentNum},post=#{post} where num=#{num}
+    </update>
+
+    <delete id="delete" parameterType="String">
+        delete from employee where num=#{num}
+    </delete>
+
+    <select id="select" parameterType="String" resultMap="employee">
+        select e.*,d.num num,d.name dname from employee e left join department d on d.num=e.department_num where e.num=#{num}
+    </select>
+
+    <select id="selectAll" resultMap="employee">
+        select e.*,d.num dnum,d.name dname from employee e left join department d on d.num=e.department_num
+    </select>
+
+    <!--当查询职位为总经理的时候，部门可能为空，加上恒成立条件就不会对数据进行过滤-->
+    <select id="selectByDepartmentAndPost" resultMap="employee">
+        select e.*,d.num dnum,d.name dname from employee e left join department d on d.num=e.department_num
+        where e.num is not NULL
+        <if test="num!=null">
+            and e.department_num=#{num}
+        </if>
+        <if test="post!=null">
+            and e.post=#{post}
+        </if>
+    </select>
+
+</mapper>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.4//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oa.dao.DealRecordDao">
+
+    <resultMap id="dealRecord" type="DealRecord">
+        <id property="id" column="id" javaType="Integer"/>
+        <result property="expenseReportId" column="expense_report_id" javaType="Integer"/>
+        <result property="dealNum" column="deal_num" javaType="String"/>
+        <result property="dealTime" column="deal_time" javaType="java.util.Date"/>
+        <result property="dealWay" column="deal_way" javaType="String"/>
+        <result property="dealResult" column="deal_result" javaType="String"/>
+        <result property="comment" column="comment" javaType="String"/>
+        <association property="dealer" column="next_deal_num" javaType="Employee">
+            <result property="name" column="ename" javaType="String"/>
+            <result property="post" column="epost" javaType="String"/>
+        </association>
+    </resultMap>
+
+    <insert id="insert" parameterType="DealRecord">
+        insert into deal_record(expense_report_id,deal_num,deal_time,deal_way,deal_result,comment)
+        values(#{expenseReportId},#{dealNum},#{dealTime},#{dealWay},#{dealResult},#{comment})
+    </insert>
+
+    <select id="selectByExpenseReport" resultMap="dealRecord">
+        select d.*,e.name ename,e.post epost from deal_record d
+        left join employee e on e.num=d.deal_num
+        where d.expense_report_id=#{expenseReportId} order by d.deal_time;
+    </select>
+
+</mapper>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.4//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oa.dao.ExpenseReportItemDao">
+
+    <resultMap id="expenseReportItem" type="ExpenseReportItem">
+        <id property="id" column="id" javaType="Integer"/>
+        <result property="expenseReportId" column="expense_report_id" javaType="Integer"/>
+        <result property="item" column="type" javaType="String"/>
+        <result property="amount" column="amount" javaType="Double"/>
+        <result property="comment" column="comment" javaType="String"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="ExpenseReportItem">
+        insert into expense_report_item(expense_report_id,type,amount,comment) values(#{expenseReportId},#{item},#{amount},#{comment})
+    </insert>
+
+    <update id="update" parameterType="ExpenseReportItem">
+        update expense_report_item set expense_report_id=#{expenseReportId},type=#{item},amount=#{amount},comment=#{comment} where id=#{id}
+    </update>
+
+    <delete id="delete" parameterType="Integer">
+        delete from expense_report_item where id=#{id}
+    </delete>
+
+    <select id="selectByExpenseReport" resultMap="expenseReportItem">
+        select * from expense_report_item where expense_report_id=#{expenseReportId} order by id;
+    </select>
+
+</mapper>
